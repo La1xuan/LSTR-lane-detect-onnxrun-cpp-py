@@ -90,16 +90,46 @@ class LSTR():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--imgpath", type=str, default='images/2.jpg', help="image path")
+    parser.add_argument("--imgpath", type=str, default='images/test1.jpg', help="image path")
     args = parser.parse_args()
 
     net = LSTR()
-    srcimg = cv2.imread(args.imgpath)
-    detected_lanes, lane_ids = net.detect(srcimg)
-    dstimg = net.draw_lanes(srcimg, detected_lanes, lane_ids)
+#    srcimg = cv2.imread(args.imgpath)
+#    detected_lanes, lane_ids = net.detect(srcimg)
+#    dstimg = net.draw_lanes(srcimg, detected_lanes, lane_ids)
 
-    winName = 'Deep learning lane detection in ONNXRuntime'
-    cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
-    cv2.imshow(winName, dstimg)
-    cv2.waitKey(0)
+#    winName = 'Deep learning lane detection in ONNXRuntime'
+#    cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+#    cv2.imshow(winName, dstimg)
+#    cv2.waitKey(0)
+#    cv2.destroyAllWindows()
+    cap = cv2.VideoCapture("images/test2.MP4")
+    cv2.namedWindow("Detected lanes", cv2.WINDOW_NORMAL)	
+
+    # out = cv2.VideoWriter('output.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 20, (1280,720))
+
+    while cap.isOpened():
+        try:
+            # Read frame from the video
+            ret, frame = cap.read()
+        except:
+            continue
+
+        if ret:	
+
+            # Detect the lanes
+            detected_lanes, lane_ids = net.detect(frame)
+            dstimg = net.draw_lanes(frame, detected_lanes, lane_ids)
+            cv2.imshow("Detected lanes", dstimg)
+            # out.write(output_img)
+
+        else:
+            break
+
+        # Press key q to stop
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    cap.release()
+    # out.release()
     cv2.destroyAllWindows()
